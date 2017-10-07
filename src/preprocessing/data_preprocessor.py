@@ -56,10 +56,3 @@ class DataPreprocessor():
         sc_X = StandardScaler()
         self.X_train = sc_X.fit_transform(self.X_train)
         self.X_test = sc_X.transform(self.X_test)
-
-    def _extract_variable_trap_indices(self, matrix, categorical_columns):
-
-        for row in matrix:
-            for col in categorical_columns:
-                vals = []
-        pass

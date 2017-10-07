@@ -14,7 +14,7 @@ class CategoryEncoderTestCase(TestCase):
                          ['Row4', 'Two', 'Yes']
                          ])
 
-        X, y = self._call_encoder_with(data)
+        X, y = self._call_encoder_with(data, [0])
 
         self.assertEquals(len(X[0]), 1)
 
@@ -26,7 +26,7 @@ class CategoryEncoderTestCase(TestCase):
                          ['Row4', 'Three', 'Yes']
                          ])
 
-        X, y = self._call_encoder_with(data)
+        X, y = self._call_encoder_with(data, [0])
 
         self.assertEquals(len(X[0]), 2)
 
@@ -39,7 +39,7 @@ class CategoryEncoderTestCase(TestCase):
                          ['Row4', 'Five', 'Yes']
                          ])
 
-        X, y = self._call_encoder_with(data)
+        X, y = self._call_encoder_with(data, [0])
 
         self.assertEquals(len(X[0]), 4)
 
@@ -51,13 +51,13 @@ class CategoryEncoderTestCase(TestCase):
                          ['Row4', 'Two', 'Yes']
                          ])
         output = [
-            [0],
             [1],
             [0],
-            [1]
+            [1],
+            [0]
         ]
 
-        X, y = self._call_encoder_with(data)
+        X, y = self._call_encoder_with(data, [0])
 
         self.assertTrue(self._data_is_same(X, output))
 
@@ -69,23 +69,41 @@ class CategoryEncoderTestCase(TestCase):
                          ['Row4', 'Two', 'Yes']
                          ])
         output = [
+            [1, 0],
             [0, 0],
             [0, 1],
-            [1, 0],
-            [0, 1]
+            [0, 0]
         ]
 
-        X, y = self._call_encoder_with(data)
+        X, y = self._call_encoder_with(data, [0])
 
         self.assertTrue(self._data_is_same(X, output))
 
-    def _call_encoder_with(self, data):
+    def test_two_cat_cols_both_avoid_variable_trap(self):
+        data = np.array([['', 'CatCol1', 'CatCol2', 'y'],
+                         ['Row1', 'One', 'One', 'Yes'],
+                         ['Row2', 'Two', 'Two', 'No'],
+                         ['Row3', 'Three', 'Three', 'No'],
+                         ['Row4', 'Two', 'Two', 'Yes']
+                         ])
+        output = [
+            [1, 0, 1, 0],
+            [0, 0, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0]
+        ]
+
+        X, y = self._call_encoder_with(data, [0, 1])
+
+        self.assertTrue(self._data_is_same(X, output))
+
+    def _call_encoder_with(self, data, cols):
         input_X, input_y = self._get_dataset_from_nparray(data)
         encoder = CategoryEncoder()
         X, y = encoder.encode_categorical_data(
             input_X,
             input_y,
-            [0]
+            cols
         )
 
         return X, y
@@ -101,4 +119,9 @@ class CategoryEncoderTestCase(TestCase):
         return X, y
 
     def _data_is_same(self, a, b):
+        if np.array_equal(a, b):
+            return True
+        else:
+            raise NameError(a, "does not equal ", b)
+
         return np.array_equal(a, b)
