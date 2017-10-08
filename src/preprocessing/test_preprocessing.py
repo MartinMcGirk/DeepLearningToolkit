@@ -9,42 +9,24 @@ from src.preprocessing.preprocessor_options import PreprocessorOptions
 class PreProcessingTestCase(TestCase):
 
     def setUp(self):
-        self.preprocessor = DataPreprocessor()
         self.file = 'test_data.csv'
-        self.preprocessor_options = PreprocessorOptions(
-            self.file,
-            [1, 2],
-            [0],
-            True,
-            True,
-            True
+
+    def test_preprocessor_can_read_from_file_and_split_into_sets(self):
+        preprocessor = DataPreprocessor()
+        preprocessor_options = PreprocessorOptions(
+            file=self.file,
+            numerical_columns=[],
+            categorical_columns=[],
+            autofill_data=False,
+            encode_categories=False,
+            feature_scaling=False
         )
-
-    def test_preprocessing_exists(self):
-        self.preprocessor.process(self.preprocessor_options)
-        self.assertIsNotNone(self.preprocessor.X_train)
-        self.assertIsNotNone(self.preprocessor.X_test)
-        self.assertIsNotNone(self.preprocessor.y_train)
-        self.assertIsNotNone(self.preprocessor.y_test)
-
-    def test_can_get_dataset_from_csv(self):
-        self.preprocessor._get_dataset_from_csv(self.file)
-        self.assertIsNotNone(self.preprocessor.X)
-        self.assertEquals(self.preprocessor.X[0, 0], 'France')
-        self.assertEquals(self.preprocessor.X[1, 1], 27)
-        self.assertIsNotNone(self.preprocessor.y)
-        self.assertEquals(self.preprocessor.y[0], 'No')
-        self.assertEquals(self.preprocessor.y[1], 'Yes')
-
-    def test_can_autofill_missing_data(self):
-        self.preprocessor._get_dataset_from_csv(self.file)
-        self.assertTrue(math.isnan(self.preprocessor.X[4, 2]))
-        self.preprocessor._autofill_missing_data([1, 2])
-        self.assertFalse(math.isnan(self.preprocessor.X[4, 2]))
-
-    def test_can_encode_categorical_data(self):
-        self.preprocessor._get_dataset_from_csv(self.file)
-        self.preprocessor._autofill_missing_data([1, 2])
-        self.assertEquals(self.preprocessor.X[0, 0], 'France')
-        self.preprocessor._encode_categorical_data([0])
-        self.assertNotEqual(self.preprocessor.X[0, 0], 'France')
+        X_train, X_test, y_train, y_test = preprocessor.process(preprocessor_options)
+        self.assertIsNotNone(X_train)
+        self.assertIsNotNone(X_test)
+        self.assertIsNotNone(y_train)
+        self.assertIsNotNone(y_test)
+        self.assertEquals(len(X_train[:, 0]), 8)
+        self.assertEquals(len(X_test[:, 0]), 2)
+        self.assertEquals(len(y_train), 8)
+        self.assertEquals(len(y_test), 2)

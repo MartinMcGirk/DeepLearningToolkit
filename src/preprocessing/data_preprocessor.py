@@ -7,49 +7,43 @@ from src.preprocessing.feature_scaler.feature_scaler import FeatureScaler
 
 class DataPreprocessor():
     def process(self, preprocessing_options):
-        self._get_dataset_from_csv(preprocessing_options.file)
+        X, y = self._get_dataset_from_csv(preprocessing_options.file)
 
         if preprocessing_options.autofill_data:
-            self._autofill_missing_data(preprocessing_options.numerical_columns)
+            X = self._autofill_missing_data(X, preprocessing_options.numerical_columns)
 
         if preprocessing_options.encode_categories:
-            self._encode_categorical_data(preprocessing_options.categorical_columns)
+            X, y = self._encode_categorical_data(X, y, preprocessing_options.categorical_columns)
 
         from sklearn.model_selection import train_test_split
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=0.2, random_state=0)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
         if preprocessing_options.feature_scaling:
-            self._apply_feature_scaling()
+            X_train, X_test = self._apply_feature_scaling(X_train, X_test)
+
+        return X_train, X_test, y_train, y_test
 
     def _get_dataset_from_csv(self, file):
         dataset = pd.read_csv(file)
-        self.X = dataset.iloc[:, :-1].values
-        self.y = dataset.iloc[:, -1].values
+        X = dataset.iloc[:, :-1].values
+        y = dataset.iloc[:, -1].values
+        return X, y
 
-    def _autofill_missing_data(self, numerical_columns):
-        """Replaces missing values in columns of numerical data
-        with the mean value of the column.
-
-        Keyword arguments:
-        numerical_columns -- An array of arrays. Each inner array should contain the indexes of numerical columns
-        """
+    def _autofill_missing_data(self, X, numerical_columns):
         autofiller = DataAutofiller()
-        self.X = autofiller.autofill_data(self.X, numerical_columns)
+        return autofiller.autofill_data(X, numerical_columns)
 
-    def _encode_categorical_data(self, categorical_columns):
-        """Replaces columns of categorical data with multiple numerical category columns
-
-        Keyword arguments:
-        categorical_columns -- An array of integer column indexes.
-        """
+    def _encode_categorical_data(self, X, y, categorical_columns):
         category_encoder = CategoryEncoder()
-        self.X, self.y = category_encoder.encode_categorical_data(
-            X=self.X,
-            y=self.y,
+        X, y = category_encoder.encode_categorical_data(
+            X=X,
+            y=y,
             categorical_columns=categorical_columns
         )
+        return X, y
 
-    def _apply_feature_scaling(self):
+    def _apply_feature_scaling(self, X_train, X_test):
         feature_scaler = FeatureScaler()
-        self.X_train = feature_scaler.apply_feature_scaling(self.X_train)
-        self.X_test = feature_scaler.apply_feature_scaling(self.X_test)
+        X_train = feature_scaler.apply_feature_scaling(X_train)
+        X_test = feature_scaler.apply_feature_scaling(X_test)
+        return X_train, X_test
