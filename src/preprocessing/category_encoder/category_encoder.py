@@ -27,11 +27,16 @@ class CategoryEncoder:
             else:
                 indexes_to_delete.append(max(X[:, cc]) + max(indexes_to_delete) + 1)
 
+        try:
+            # Split the numeric column into multiple binary choice columns
+            onehotencoder = OneHotEncoder(categorical_features=categorical_columns)
+            X = onehotencoder.fit_transform(X).toarray()
+        except:
+            raise ValueError('Failed to encode categorical data, check there are no NaN or None missing data values '
+                             'anywhere in your dataset')
 
-        onehotencoder = OneHotEncoder(categorical_features=categorical_columns)
-        X = onehotencoder.fit_transform(X).toarray()
         # Avoid the variable trap
-        X = np.delete(X, indexes_to_delete, 1)
+        X = np.delete(X, indexes_to_delete, axis=1)
 
         labelEncoder_Y = LabelEncoder()
         y = labelEncoder_Y.fit_transform(y)

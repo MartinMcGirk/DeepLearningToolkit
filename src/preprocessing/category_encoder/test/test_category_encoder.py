@@ -97,6 +97,18 @@ class CategoryEncoderTestCase(TestCase):
 
         self.assertTrue(self._data_is_same(X, output))
 
+    def test_encoding_data_with_illegal_values_throws_error(self):
+
+        data = np.array([['', 'CatCol', 'CatCol2', 'y'],
+                         ['Row1', 'One', 1, 'Yes'],
+                         ['Row2', 'Two', float('nan'), 'No'],
+                         ['Row3', 'One', 1, 'No'],
+                         ['Row4', 'Two', 1, 'Yes']
+                         ])
+
+        with self.assertRaises(ValueError):
+            self._call_encoder_with(data, [0])
+
     def test_y_col_gets_encoded_into_numbers(self):
         data = np.array([['', 'CatCol', 'y'],
                          ['Row1', 'One', 'Yes'],
