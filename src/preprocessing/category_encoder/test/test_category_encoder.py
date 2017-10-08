@@ -135,6 +135,4 @@ class CategoryEncoderTestCase(TestCase):
         if np.array_equal(a, b):
             return True
         else:
-            raise NameError(a, "does not equal ", b)
-
-        return np.array_equal(a, b)
+            raise AssertionError(a, "does not equal ", b)

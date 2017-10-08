@@ -22,10 +22,11 @@ class DataAutofillerTestCase(TestCase):
         )
         self.X = dataset.iloc[:, :-1].values
 
-    def test_one_column_with_missing_data_gets_autofilled(self):
+    def test_one_column_with_missing_data_gets_autofilled_but_other_does_not(self):
         autofiller = DataAutofiller()
         X = autofiller.autofill_data(self.X, [1])
         self.assertNotEquals(X[1, 1], 'nan')
+        self.assertEquals(X[4, 2], 'nan')
 
     def test_that_multiple_columns_with_missing_data_can_be_autofilled(self):
         autofiller = DataAutofiller()

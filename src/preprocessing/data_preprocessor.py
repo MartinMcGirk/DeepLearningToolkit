@@ -2,6 +2,7 @@ import pandas as pd
 
 from src.preprocessing.category_encoder.category_encoder import CategoryEncoder
 from src.preprocessing.data_autofiller.data_autofiller import DataAutofiller
+from src.preprocessing.feature_scaler.feature_scaler import FeatureScaler
 
 
 class DataPreprocessor():
@@ -49,8 +50,6 @@ class DataPreprocessor():
         )
 
     def _apply_feature_scaling(self):
-        # Feature Scaling
-        from sklearn.preprocessing import StandardScaler
-        sc_X = StandardScaler()
-        self.X_train = sc_X.fit_transform(self.X_train)
-        self.X_test = sc_X.transform(self.X_test)
+        feature_scaler = FeatureScaler()
+        self.X_train = feature_scaler.apply_feature_scaling(self.X_train)
+        self.X_test = feature_scaler.apply_feature_scaling(self.X_test)
