@@ -1,6 +1,7 @@
 import pandas as pd
 
 from src.preprocessing.category_encoder.category_encoder import CategoryEncoder
+from src.preprocessing.data_autofiller.data_autofiller import DataAutofiller
 
 
 class DataPreprocessor():
@@ -31,11 +32,8 @@ class DataPreprocessor():
         Keyword arguments:
         numerical_columns -- An array of arrays. Each inner array should contain the indexes of numerical columns
         """
-        from sklearn.preprocessing import Imputer
-        for nc in numerical_columns:
-            imputer = Imputer(missing_values='NaN', strategy='mean', axis=0)
-            imputer = imputer.fit(self.X[:, nc[0]:nc[1]])
-            self.X[:, nc[0]:nc[1]] = imputer.transform(self.X[:, nc[0]:nc[1]])
+        autofiller = DataAutofiller()
+        self.X = autofiller.autofill_data(self.X, numerical_columns)
 
     def _encode_categorical_data(self, categorical_columns):
         """Replaces columns of categorical data with multiple numerical category columns

@@ -7,7 +7,9 @@ class CategoryEncoder:
         """Replaces columns of categorical data with multiple numerical category columns
     
         Keyword arguments:
-        categorical_columns -- An array of integer column indexes.
+            X -- A numpy 2 dimensional ndarray of values.
+            y -- A numpy ndarray of values. Supports only 2 unique values currently.
+            categorical_columns -- An array of integer column indexes.
         """
 
         # Encoding categorical data

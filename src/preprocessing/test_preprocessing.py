@@ -13,7 +13,7 @@ class PreProcessingTestCase(TestCase):
         self.file = 'test_data.csv'
         self.preprocessor_options = PreprocessorOptions(
             self.file,
-            [[1,3]],
+            [1, 2],
             [0],
             True,
             True,
@@ -39,12 +39,12 @@ class PreProcessingTestCase(TestCase):
     def test_can_autofill_missing_data(self):
         self.preprocessor._get_dataset_from_csv(self.file)
         self.assertTrue(math.isnan(self.preprocessor.X[4, 2]))
-        self.preprocessor._autofill_missing_data([[1, 3]])
+        self.preprocessor._autofill_missing_data([1, 2])
         self.assertFalse(math.isnan(self.preprocessor.X[4, 2]))
 
     def test_can_encode_categorical_data(self):
         self.preprocessor._get_dataset_from_csv(self.file)
-        self.preprocessor._autofill_missing_data([[1, 3]])
+        self.preprocessor._autofill_missing_data([1, 2])
         self.assertEquals(self.preprocessor.X[0, 0], 'France')
         self.preprocessor._encode_categorical_data([0])
         self.assertNotEqual(self.preprocessor.X[0, 0], 'France')

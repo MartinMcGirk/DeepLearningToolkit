@@ -97,6 +97,19 @@ class CategoryEncoderTestCase(TestCase):
 
         self.assertTrue(self._data_is_same(X, output))
 
+    def test_y_col_gets_encoded_into_numbers(self):
+        data = np.array([['', 'CatCol', 'y'],
+                         ['Row1', 'One', 'Yes'],
+                         ['Row2', 'Two', 'No'],
+                         ['Row3', 'One', 'No'],
+                         ['Row4', 'Two', 'Yes']
+                         ])
+        output = [1, 0, 0, 1]
+
+        X, y = self._call_encoder_with(data, [0])
+
+        self.assertTrue(self._data_is_same(y, output))
+
     def _call_encoder_with(self, data, cols):
         input_X, input_y = self._get_dataset_from_nparray(data)
         encoder = CategoryEncoder()
