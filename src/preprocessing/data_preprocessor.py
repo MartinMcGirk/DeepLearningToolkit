@@ -6,6 +6,11 @@ from src.preprocessing.feature_scaler.feature_scaler import FeatureScaler
 
 
 class DataPreprocessor():
+    def __init__(self, category_encoder=None, data_auto_filler=None, feature_scaler=None):
+        self.category_encoder = category_encoder or CategoryEncoder()
+        self.data_auto_filler = data_auto_filler or DataAutofiller()
+        self.feature_scaler = feature_scaler or FeatureScaler()
+
     def process(self, preprocessing_options):
         X, y = self._get_dataset_from_csv(preprocessing_options.file)
 
@@ -30,12 +35,10 @@ class DataPreprocessor():
         return X, y
 
     def _autofill_missing_data(self, X, numerical_columns):
-        autofiller = DataAutofiller()
-        return autofiller.autofill_data(X, numerical_columns)
+        return self.data_auto_filler.autofill_data(X, numerical_columns)
 
     def _encode_categorical_data(self, X, y, categorical_columns):
-        category_encoder = CategoryEncoder()
-        X, y = category_encoder.encode_categorical_data(
+        X, y = self.category_encoder.encode_categorical_data(
             X=X,
             y=y,
             categorical_columns=categorical_columns
@@ -43,7 +46,6 @@ class DataPreprocessor():
         return X, y
 
     def _apply_feature_scaling(self, X_train, X_test):
-        feature_scaler = FeatureScaler()
-        X_train = feature_scaler.apply_feature_scaling(X_train)
-        X_test = feature_scaler.apply_feature_scaling(X_test)
+        X_train = self.feature_scaler.apply_feature_scaling(X_train)
+        X_test = self.feature_scaler.apply_feature_scaling(X_test)
         return X_train, X_test

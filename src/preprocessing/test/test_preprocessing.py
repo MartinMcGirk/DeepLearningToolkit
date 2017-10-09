@@ -88,3 +88,70 @@ class PreProcessingTestCase(TestCase):
         X_train, X_test, y_train, y_test = preprocessor.process(preprocessor_options)
         contains_string = [isinstance(val, str) for val in X_train[:, 0]]
         self.assertTrue(True not in contains_string)
+
+    def test_can_use_alternate_category_encoder_if_needed(self):
+        class SpyEncoder:
+            def __init__(self):
+                self.called = False
+
+            def encode_categorical_data(self, X, y, categorical_columns):
+                self.called = True
+                return X, y
+
+        encoder = SpyEncoder()
+        preprocessor = DataPreprocessor(category_encoder=encoder)
+        preprocessor_options = PreprocessorOptions(
+            file=self.file,
+            numerical_columns=[1, 2],
+            categorical_columns=[0],
+            autofill_data=False,
+            encode_categories=True,
+            feature_scaling=False
+        )
+        preprocessor.process(preprocessor_options)
+        self.assertTrue(encoder.called)
+
+    def test_can_use_alternate_data_autofiller_if_needed(self):
+        class SpyFiller:
+            def __init__(self):
+                self.called = False
+
+            def autofill_data(self, X, numerical_columns):
+                self.called = True
+                return X
+
+        autofiller = SpyFiller()
+        preprocessor = DataPreprocessor(data_auto_filler=autofiller)
+        preprocessor_options = PreprocessorOptions(
+            file=self.file,
+            numerical_columns=[1, 2],
+            categorical_columns=[0],
+            autofill_data=True,
+            encode_categories=False,
+            feature_scaling=False
+        )
+        preprocessor.process(preprocessor_options)
+        self.assertTrue(autofiller.called)
+
+    def test_can_use_alternate_feature_scaler_if_needed(self):
+        class SpyScaler:
+            def __init__(self):
+                self.called = False
+
+            def apply_feature_scaling(self, X):
+                self.called = True
+                return X
+
+        scaler = SpyScaler()
+        preprocessor = DataPreprocessor(feature_scaler=scaler)
+        preprocessor_options = PreprocessorOptions(
+            file=self.file,
+            numerical_columns=[1, 2],
+            categorical_columns=[0],
+            autofill_data=False,
+            encode_categories=False,
+            feature_scaling=True
+        )
+        preprocessor.process(preprocessor_options)
+        self.assertTrue(scaler.called)
+
