@@ -21,7 +21,7 @@ class PreProcessingTestCase(TestCase):
             encode_categories=False,
             feature_scaling=False
         )
-        X_train, X_test, y_train, y_test = preprocessor.process(preprocessor_options)
+        X_train, X_test, y_train, y_test = preprocessor.set_up_preprocessor_from_base_data(preprocessor_options)
         self.assertIsNotNone(X_train)
         self.assertIsNotNone(X_test)
         self.assertIsNotNone(y_train)
@@ -41,7 +41,7 @@ class PreProcessingTestCase(TestCase):
             encode_categories=False,
             feature_scaling=False
         )
-        X_train, X_test, y_train, y_test = preprocessor.process(preprocessor_options)
+        X_train, X_test, y_train, y_test = preprocessor.set_up_preprocessor_from_base_data(preprocessor_options)
         contains_nan = [math.isnan(float(val)) for val in X_train[:, 1]]
         self.assertTrue(True in contains_nan)
 
@@ -55,7 +55,7 @@ class PreProcessingTestCase(TestCase):
             encode_categories=False,
             feature_scaling=False
         )
-        X_train, X_test, y_train, y_test = preprocessor.process(preprocessor_options)
+        X_train, X_test, y_train, y_test = preprocessor.set_up_preprocessor_from_base_data(preprocessor_options)
         col_1_contains_nan = [math.isnan(float(val)) for val in X_train[:, 1]]
         self.assertTrue(True not in col_1_contains_nan)
         col_2_contains_nan = [math.isnan(float(val)) for val in X_train[:, 2]]
@@ -71,7 +71,7 @@ class PreProcessingTestCase(TestCase):
             encode_categories=False,
             feature_scaling=False
         )
-        X_train, X_test, y_train, y_test = preprocessor.process(preprocessor_options)
+        X_train, X_test, y_train, y_test = preprocessor.set_up_preprocessor_from_base_data(preprocessor_options)
         contains_string = [isinstance(val, str) for val in X_train[:, 0]]
         self.assertTrue(False not in contains_string)
 
@@ -85,7 +85,7 @@ class PreProcessingTestCase(TestCase):
             encode_categories=True,
             feature_scaling=False
         )
-        X_train, X_test, y_train, y_test = preprocessor.process(preprocessor_options)
+        X_train, X_test, y_train, y_test = preprocessor.set_up_preprocessor_from_base_data(preprocessor_options)
         contains_string = [isinstance(val, str) for val in X_train[:, 0]]
         self.assertTrue(True not in contains_string)
 
@@ -108,7 +108,7 @@ class PreProcessingTestCase(TestCase):
             encode_categories=True,
             feature_scaling=False
         )
-        preprocessor.process(preprocessor_options)
+        preprocessor.set_up_preprocessor_from_base_data(preprocessor_options)
         self.assertTrue(encoder.called)
 
     def test_can_use_alternate_data_autofiller_if_needed(self):
@@ -130,7 +130,7 @@ class PreProcessingTestCase(TestCase):
             encode_categories=False,
             feature_scaling=False
         )
-        preprocessor.process(preprocessor_options)
+        preprocessor.set_up_preprocessor_from_base_data(preprocessor_options)
         self.assertTrue(autofiller.called)
 
     def test_can_use_alternate_feature_scaler_if_needed(self):
@@ -152,6 +152,6 @@ class PreProcessingTestCase(TestCase):
             encode_categories=False,
             feature_scaling=True
         )
-        preprocessor.process(preprocessor_options)
+        preprocessor.set_up_preprocessor_from_base_data(preprocessor_options)
         self.assertTrue(scaler.called)
 

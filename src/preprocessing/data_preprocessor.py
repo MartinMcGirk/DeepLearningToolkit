@@ -11,7 +11,7 @@ class DataPreprocessor():
         self.data_auto_filler = data_auto_filler or DataAutofiller()
         self.feature_scaler = feature_scaler or FeatureScaler()
 
-    def process(self, preprocessing_options):
+    def set_up_preprocessor_from_base_data(self, preprocessing_options):
         X, y = self._get_dataset_from_csv(preprocessing_options.file)
 
         if preprocessing_options.autofill_data:
@@ -27,6 +27,24 @@ class DataPreprocessor():
             X_train, X_test = self._apply_feature_scaling(X_train, X_test)
 
         return X_train, X_test, y_train, y_test
+
+    def process(self, preprocessing_options):
+        pass
+        # X, y = self._get_dataset_from_csv(preprocessing_options.file)
+        #
+        # if preprocessing_options.autofill_data:
+        #     X = self._autofill_missing_data(X, preprocessing_options.numerical_columns)
+        #
+        # if preprocessing_options.encode_categories:
+        #     X, y = self._encode_categorical_data(X, y, preprocessing_options.categorical_columns)
+        #
+        # from sklearn.model_selection import train_test_split
+        # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+        #
+        # if preprocessing_options.feature_scaling:
+        #     X_train, X_test = self._apply_feature_scaling(X_train, X_test)
+        #
+        # return X_train, X_test, y_train, y_test
 
     def _get_dataset_from_csv(self, file):
         dataset = pd.read_csv(file)
